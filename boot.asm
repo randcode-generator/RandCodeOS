@@ -2,7 +2,9 @@
   
 jmp stage2
 
-msg: db 'Welcome to RandCodeOS', 0
+msg:            db 'Welcome to RandCodeOS', 0
+intMessage0:    db 'Interrupt 0!', 0
+intMessage1:    db 'Interrupt 1!', 0
 
 gdt_info:
 ; null descriptor: 8 bytes of zeros
@@ -41,11 +43,44 @@ gdt_entry:
     dw      gdt_info_end - gdt_info - 1     ; GDT size
     dd      gdt_info                        ; base of GDT
 
+idt_info:
+    ; interrupt 1
+    db   0xD2,0x7c          ; offset(0:15)-address of interrupt 1 function (handler)
+    dw   8                  ; code segment (0x08)
+    db   0                  ; hard coded all zeros
+    db   10001110b          ; 1000b
+                            ; 1-segment present flag
+                            ; 00-privilage level
+                            ; 0-hard coded value
+                            ; 1110b
+                            ; 1-size of gate 1-32 bit, 0-16 bit
+                            ; 110-hard coded value for type interrupt gate
+    db   0,0                ; offset(16:31)
+    ; interrupt 0
+    db   0xE6,0x7c          ; address of interrupt 0 function (handler)
+    dw   8                  ; code segment (0x08)
+    db   0                  ; hard coded all zeros
+    db   10001110b          ; 1000b
+                            ; 1-segment present flag
+                            ; 00-privilage level
+                            ; 0-hard coded value
+                            ; 1110b
+                            ; 1-size of gate 1-32 bit, 0-16 bit
+                            ; 110-hard coded value for type interrupt gate
+    db   0,0                ; offset(16:31)
+idt_info_end:
+
+idt_entry:
+    dw idt_info_end - idt_info  ; IDT size
+    dd idt_info                 ; base of IDT
+
 stage2:
     cli                     ; disable interrupts
     pusha                   ; push all registers into stack
     lgdt    [gdt_entry]     ; load GDT
     popa                    ; Restores all registers from stack
+
+    lidt    [idt_entry]     ; load IDT
 
     ; Go into protected mode
     ; set cr0 register to 1
@@ -98,6 +133,24 @@ print:
     pop ebp                     ; copy the top of the stack to ebp, restore the original ebp value
     ret
 
+interrupt0:   
+    lea     eax, [intMessage0]  ; load address of msg to eax
+    push    eax                 ; push into stack (this will be parameter 1)
+    push    0                   ; x
+    push    1                   ; y
+    call    print
+    add     esp,12              ; pop off the stack
+iret
+
+interrupt1:
+    lea     eax, [intMessage1]  ; load address of msg to eax
+    push    eax                 ; push into stack (this will be parameter 1)
+    push    0                   ; x
+    push    2                   ; y
+    call    print
+    add     esp,12              ; pop off the stack
+iret
+
 stage3:
     mov     eax, 0x10
     mov     ds, eax     ; set ds to 0x10 (as specified in GDT)
@@ -109,6 +162,8 @@ stage3:
     call    print
     add     esp, 12     ; pop off the stack
 
+    int     0
+    int     1
     hlt
 
     times 510-($-$$) db 0
