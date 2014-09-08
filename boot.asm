@@ -1,5 +1,6 @@
-[ORG 0x7c00]
-  
+%define org 0x7c00
+[ORG org]
+starting:
 jmp stage2
 
 msg:            db 'Welcome to RandCodeOS', 0
@@ -43,31 +44,25 @@ gdt_entry:
     dw      gdt_info_end - gdt_info - 1     ; GDT size
     dd      gdt_info                        ; base of GDT
 
+%macro interrupt 1
+    dw   %1                 ; offset(0:15)-address of interrupt function (handler)
+    dw   8                  ; code segment (0x08)
+    db   0                  ; hard coded all zeros
+    db   10001110b          ; 1000b
+                            ; 1-segment present flag
+                            ; 00-privilage level
+                            ; 0-hard coded value
+                            ; 1110b
+                            ; 1-size of gate 1-32 bit, 0-16 bit
+                            ; 110-hard coded value for type interrupt gate
+    db   0,0                ; offset(16:31)
+%endmacro
+
 idt_info:
     ; interrupt 1
-    db   0xD2,0x7c          ; offset(0:15)-address of interrupt 1 function (handler)
-    dw   8                  ; code segment (0x08)
-    db   0                  ; hard coded all zeros
-    db   10001110b          ; 1000b
-                            ; 1-segment present flag
-                            ; 00-privilage level
-                            ; 0-hard coded value
-                            ; 1110b
-                            ; 1-size of gate 1-32 bit, 0-16 bit
-                            ; 110-hard coded value for type interrupt gate
-    db   0,0                ; offset(16:31)
+    interrupt interrupt1-starting+org
     ; interrupt 0
-    db   0xE6,0x7c          ; address of interrupt 0 function (handler)
-    dw   8                  ; code segment (0x08)
-    db   0                  ; hard coded all zeros
-    db   10001110b          ; 1000b
-                            ; 1-segment present flag
-                            ; 00-privilage level
-                            ; 0-hard coded value
-                            ; 1110b
-                            ; 1-size of gate 1-32 bit, 0-16 bit
-                            ; 110-hard coded value for type interrupt gate
-    db   0,0                ; offset(16:31)
+    interrupt interrupt0-starting+org
 idt_info_end:
 
 idt_entry:
@@ -133,23 +128,21 @@ print:
     pop ebp                     ; copy the top of the stack to ebp, restore the original ebp value
     ret
 
-interrupt0:   
-    lea     eax, [intMessage0]  ; load address of msg to eax
+%macro interrupt_handler 2  
+    lea     eax, [intMessage%1]  ; load address of msg to eax
     push    eax                 ; push into stack (this will be parameter 1)
     push    0                   ; x
-    push    1                   ; y
+    push    %2                  ; y
     call    print
     add     esp,12              ; pop off the stack
 iret
+%endmacro
+
+interrupt0:
+interrupt_handler 0, 1
 
 interrupt1:
-    lea     eax, [intMessage1]  ; load address of msg to eax
-    push    eax                 ; push into stack (this will be parameter 1)
-    push    0                   ; x
-    push    2                   ; y
-    call    print
-    add     esp,12              ; pop off the stack
-iret
+interrupt_handler 1, 2
 
 stage3:
     mov     eax, 0x10
