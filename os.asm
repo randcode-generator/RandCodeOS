@@ -4,8 +4,6 @@ starting:
 jmp stage2
 
 msg:            db 'Welcome to RandCodeOS', 0
-intMessage0:    db 'Interrupt 0!', 0
-intMessage1:    db 'Interrupt 1!', 0
 
 gdt_info:
 ; null descriptor: 8 bytes of zeros
@@ -59,10 +57,53 @@ gdt_entry:
 %endmacro
 
 idt_info:
-    ; interrupt 1
-    interrupt interrupt1-starting+org
-    ; interrupt 0
-    interrupt interrupt0-starting+org
+    interrupt interrupt_default-starting+org
+    interrupt interrupt_default-starting+org
+    interrupt interrupt_default-starting+org
+    interrupt interrupt_default-starting+org
+    interrupt interrupt_default-starting+org
+    interrupt interrupt_default-starting+org
+    interrupt interrupt_default-starting+org
+    interrupt interrupt_default-starting+org
+    interrupt interrupt_default-starting+org
+    interrupt interrupt_default-starting+org
+    interrupt interrupt_default-starting+org
+    interrupt interrupt_default-starting+org
+    interrupt interrupt_default-starting+org
+    interrupt interrupt_default-starting+org
+    interrupt interrupt_default-starting+org
+    interrupt interrupt_default-starting+org
+    interrupt interrupt_default-starting+org
+    interrupt interrupt_default-starting+org
+    interrupt interrupt_default-starting+org
+    interrupt interrupt_default-starting+org
+    interrupt interrupt_default-starting+org
+    interrupt interrupt_default-starting+org
+    interrupt interrupt_default-starting+org
+    interrupt interrupt_default-starting+org
+    interrupt interrupt_default-starting+org
+    interrupt interrupt_default-starting+org
+    interrupt interrupt_default-starting+org
+    interrupt interrupt_default-starting+org
+    interrupt interrupt_default-starting+org
+    interrupt interrupt_default-starting+org
+    interrupt interrupt_default-starting+org
+    interrupt interrupt_default-starting+org
+    interrupt IRQ_32_39_interrupt_default-starting+org
+    interrupt interrupt33-starting+org
+    interrupt IRQ_32_39_interrupt_default-starting+org
+    interrupt IRQ_32_39_interrupt_default-starting+org
+    interrupt IRQ_32_39_interrupt_default-starting+org
+    interrupt IRQ_32_39_interrupt_default-starting+org
+    interrupt IRQ_32_39_interrupt_default-starting+org
+    interrupt IRQ_32_39_interrupt_default-starting+org
+    interrupt IRQ_40_47_interrupt_default-starting+org
+    interrupt IRQ_40_47_interrupt_default-starting+org
+    interrupt IRQ_40_47_interrupt_default-starting+org
+    interrupt IRQ_40_47_interrupt_default-starting+org
+    interrupt IRQ_40_47_interrupt_default-starting+org
+    interrupt IRQ_40_47_interrupt_default-starting+org
+    interrupt IRQ_40_47_interrupt_default-starting+org
 idt_info_end:
 
 idt_entry:
@@ -128,21 +169,65 @@ print:
     pop ebp                     ; copy the top of the stack to ebp, restore the original ebp value
     ret
 
-%macro interrupt_handler 2  
-    lea     eax, [intMessage%1]  ; load address of msg to eax
-    push    eax                 ; push into stack (this will be parameter 1)
-    push    0                   ; x
-    push    %2                  ; y
-    call    print
-    add     esp,12              ; pop off the stack
+interrupt_default:
 iret
-%endmacro
 
-interrupt0:
-interrupt_handler 0, 1
+IRQ_32_39_interrupt_default:
+    mov al, 0x20        ; EOI command
+    out 0x20, al        ; send to master
+iret
 
-interrupt1:
-interrupt_handler 1, 2
+IRQ_40_47_interrupt_default:
+    mov al, 0x20        ; EOI command
+    out 0x20, al        ; send to master
+    out 0xA0, al        ; send to slave
+iret
+
+VIDEO_MEMEORY:
+    dd 0xB80A0          ; 0xB8000 + 80 * 2
+                        ; 80 characters per line
+                        ; 2 bytes per character
+
+keyscan:
+    times 0x90 db 0
+    db 'q','w','e','r','t','y','u','i','o','p'
+    times 4 db 0
+    db 'a','s','d','f','g','h','j','k','l'
+    times 5 db 0
+    db 'z','x','c','v','b','n','m'
+    times 6 db 0
+    db ' '
+
+interrupt33:
+
+poll_status:
+    ; bit 0 is the output buffer status
+    ; 1 means buffer is full, can be read
+    ; 0 means buffer is empty, don't read
+    mov eax, 0              ; set eax to 0
+    in al, 0x64             ; read status from keyboard
+    and al, 1               ; zero out all bits except first
+    cmp al, 1               ; compare bits 
+    jne poll_status         ; jump if not equal
+
+    in al, 0x60             ; read from buffer
+
+    mov cx, ax
+    cmp cx, 0x80            ; compare cx to 0x80
+    jl cont                 ; if cx is less then 0x80 go to cont
+
+    mov ebx, [VIDEO_MEMEORY]    ; copy video memory to ebx
+    and eax, 0x00FF             ; zero all bytes except the first
+    mov cl, [keyscan+eax]       ; map the keyscan to ascii
+    mov byte[ebx], cl           ; copy to video memory
+    mov cl, 15                  ; set the character color to white
+    mov byte[ebx+1], cl         ; copy to second byte of video memory
+    add word[VIDEO_MEMEORY], 2  ; add 2 to video memory variable
+
+cont:
+    mov al, 0x20                ; EOI command
+    out 0x20, al                ; send EOI command to master
+iret
 
 stage3:
     mov     eax, 0x10
@@ -155,6 +240,28 @@ stage3:
     call    print
     add     esp, 12     ; pop off the stack
 
-    int     0
-    int     1
-    hlt
+    ; remap the IRQ by sending
+    ; commands to the PIC
+    ; http://en.wikibooks.org/wiki/X86_Assembly/Programmable_Interrupt_Controller#Remapping
+    mov al, 0x11
+    out 0x20, al
+    out 0xA0, al
+    mov al, 0x20
+    out 0x21, al
+    mov al, 0x28
+    out 0xA1, al
+    mov al, 0x04
+    out 0x21, al
+    mov al, 0x02
+    out 0xA1, al
+    mov al, 0x01
+    out 0x21, al
+    out 0xA1, al
+    mov al, 0x0
+    out 0x21, al
+    out 0xA1, al
+
+    sti                 ; enable interrupt
+
+    jmp $
+times 1024-($-$$) db 0

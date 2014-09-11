@@ -6,7 +6,7 @@ Reset:
     mov     ah, 0x0         ; 0x0 means to reset disk
     mov     dl, 0           ; drive 0 is floppy drive
     int     0x13            ; call BIOS
-    jc      Reset           ; If Carry Flag (CF) is set, error occurred.
+    jc      Reset           ; If Carry Flag (CF) is set, error occurred
                             ; Try resetting again
  
     ; set es:bx to 0x0:0x1000
@@ -17,7 +17,7 @@ Reset:
  
 Read:
     mov     ah, 0x02        ; 0x02 means to read from disk
-    mov     al, 1           ; read 1 sector at a time
+    mov     al, 2           ; read 2 sector at a time
     mov     ch, 0           ; sector 2 is still on track 1
     mov     cl, 2           ; sector to read (second sector)
     mov     dh, 0           ; head number
