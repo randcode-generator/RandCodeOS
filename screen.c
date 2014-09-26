@@ -2,18 +2,10 @@ unsigned int VIDEO_MEMORY = 0xB8000;
 unsigned short x = 0;
 unsigned short y = 0;
 
-void moveCursorTo();
-unsigned char inportb(unsigned short port)
-{
-	unsigned char rv;
-	__asm__ __volatile__ ("inb %1, %0":"=a"(rv): "Nd"(port));
-	return rv;
-}
+unsigned char SCREEN_WIDTH = 80;
+unsigned char SCREEN_HEIGHT = 25;
 
-void outportb(unsigned short port, unsigned char command)
-{
-	__asm__ __volatile__ ("outb %1, %0"::"d"(port), "a"(command));
-}
+void moveCursorTo();
 
 void setXY(unsigned short xArg, unsigned short yArg)
 {
@@ -68,4 +60,19 @@ void printStr(const char * msg)
 		putchar(c);
 		i++;
 	}
+}
+
+void clrScreen()
+{
+	unsigned char *memory = (unsigned char *)0xB8000;
+	unsigned short linear = SCREEN_WIDTH * SCREEN_HEIGHT * 2 - 10;
+	unsigned short i = 0;
+	for(; i < linear;)
+	{
+		memory[i] = ' ';
+		i++;
+		memory[i] = 15;
+		i++;
+	}
+	setXY(0,0);
 }

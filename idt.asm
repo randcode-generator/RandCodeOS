@@ -1,5 +1,4 @@
 extern keyboard
-extern divideByZero
 
 %macro interrupt 1
     dw   %1                 ; offset(0:15)-address of interrupt function (handler)
@@ -19,6 +18,17 @@ idt_info:
     %rep 32
     interrupt interrupt_default-starting+org
     %endrep
+	interrupt IRQ_32_39_interrupt_default-starting+org
+    interrupt interrupt_33-starting+org
+    interrupt IRQ_32_39_interrupt_default-starting+org
+    interrupt IRQ_32_39_interrupt_default-starting+org
+    interrupt IRQ_32_39_interrupt_default-starting+org
+    interrupt IRQ_32_39_interrupt_default-starting+org
+    interrupt IRQ_32_39_interrupt_default-starting+org
+    interrupt IRQ_32_39_interrupt_default-starting+org
+    %rep 8
+    interrupt IRQ_40_47_interrupt_default-starting+org
+    %endrep
 idt_info_end:
 
 idt_entry:
@@ -26,4 +36,21 @@ idt_entry:
     dd idt_info                 ; base of IDT
 
 interrupt_default:
+iret
+
+IRQ_32_39_interrupt_default:
+    mov al, 0x20        ; EOI command
+    out 0x20, al        ; send to master
+iret
+
+IRQ_40_47_interrupt_default:
+    mov al, 0x20        ; EOI command
+    out 0x20, al        ; send to master
+    out 0xA0, al        ; send to slave
+iret
+
+interrupt_33:
+    call keyboard
+    mov al, 0x20        ; EOI command
+    out 0x20, al        ; send to master
 iret

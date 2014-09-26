@@ -60,12 +60,39 @@ stage2:
 bits 32
 %include "idt.asm"
 
+; remap the IRQ by sending
+; commands to the PIC
+; http://en.wikibooks.org/wiki/X86_Assembly/Programmable_Interrupt_Controller#Remapping
+remapIRQ:
+    mov al, 0x11
+    out 0x20, al
+    out 0xA0, al
+    mov al, 0x20
+    out 0x21, al
+    mov al, 0x28
+    out 0xA1, al
+    mov al, 0x04
+    out 0x21, al
+    mov al, 0x02
+    out 0xA1, al
+    mov al, 0x01
+    out 0x21, al
+    out 0xA1, al
+    mov al, 0x0
+    out 0x21, al
+    out 0xA1, al
+ret
+
 stage3:
     mov     eax, 0x10
     mov     ds, eax     ; set ds to 0x10 (as specified in GDT)
 
     lidt    [idt_entry]     ; load IDT
 
+	call remapIRQ
+	
+	sti
+	
     call main
     
     ; should never get here
