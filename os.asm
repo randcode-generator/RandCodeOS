@@ -58,7 +58,14 @@ stage2:
     jmp     0x08:stage3
 
 bits 32
+%include "idt.asm"
+
 stage3:
+    mov     eax, 0x10
+    mov     ds, eax     ; set ds to 0x10 (as specified in GDT)
+
+    lidt    [idt_entry]     ; load IDT
+
     call main
     
     ; should never get here
