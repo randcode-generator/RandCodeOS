@@ -6,6 +6,6 @@ const char *msg = "Welcome to RandcodeOS";
 int main()
 {
 	clrScreen();
-	printStr(msg);
+	printf(msg);
 	setXY(0, 1);
 }
