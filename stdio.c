@@ -1,3 +1,4 @@
+extern void memcpy(void* dest, void* src, unsigned int size);
 unsigned int VIDEO_MEMORY = 0xB8000;
 unsigned short position = 0;
 
@@ -5,6 +6,8 @@ unsigned char SCREEN_WIDTH = 80;
 unsigned char SCREEN_HEIGHT = 25;
 
 void moveCursorTo();
+void clrScreen();
+void putch(char c);
 
 void setXY(unsigned short x, unsigned short y)
 {
@@ -27,10 +30,35 @@ void moveCursorTo()
 	outportb(0x3D5, position & 0xFF);
 }
 
+void scrollScreen()
+{
+	memcpy((unsigned int*)0xB8000, (unsigned int*)0xB80A0,
+		SCREEN_WIDTH * (SCREEN_HEIGHT - 1) * 2);
+	setXY(0, SCREEN_HEIGHT - 1);
+	int i = 0;
+	for(; i < SCREEN_WIDTH; i++)
+	{
+		putch(' ');
+	}
+	setXY(0, SCREEN_HEIGHT - 1);
+}
+
+void nextLine()
+{
+	unsigned short x, y;
+	getXY(&x, &y);
+	setXY(0, y + 1);
+	if(position > SCREEN_WIDTH * SCREEN_HEIGHT - 1)
+		scrollScreen();
+}
+
 void incrementCursor()
 {
 	position++;
-	moveCursorTo();
+	if(position > SCREEN_WIDTH * SCREEN_HEIGHT - 1)
+		scrollScreen();
+	else
+		moveCursorTo();
 }
 
 void putch(char c)
@@ -132,9 +160,7 @@ void printf(const char * msg, ...)
 		}
 		else if(c == '\n')
 		{
-			unsigned short x, y;
-			getXY(&x, &y);
-			setXY(0, y + 1);
+			nextLine();
 			continue;
 		}
 		if(c == 0)
