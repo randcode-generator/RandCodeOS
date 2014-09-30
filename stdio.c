@@ -52,6 +52,17 @@ void nextLine()
 		scrollScreen();
 }
 
+void deleteChar()
+{
+	if(position == 0)
+		return;
+	position--;
+	moveCursorTo();
+	unsigned char* memory = (unsigned char*)VIDEO_MEMORY;
+	*memory = ' ';
+	*(memory + 1) = 15;
+}
+
 void incrementCursor()
 {
 	position++;

@@ -1,4 +1,6 @@
 extern void putchar(char c);
+extern void nextLine();
+extern void deleteChar();
 
 unsigned char keyscan[] =
 {
@@ -45,6 +47,14 @@ void keyboard()
 	{
 		isShift=0;
 		return;
+	}
+	else if(rv==0x1C)
+	{
+		nextLine();
+	}
+	else if(rv==0x0E)
+	{
+		deleteChar();
 	}
 	
 	if(rv<0x80 && isShift==0)
