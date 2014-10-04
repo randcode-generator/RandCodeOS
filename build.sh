@@ -4,10 +4,10 @@ nasm -f elf -o os_a.o os.asm
 nasm -f elf -o dummy_end_section.o dummy_end_section.asm
 
 #Compile C code
-gcc -ffreestanding -nostdlib -nostdinc -fno-builtin -fno-stack-protector -fno-asynchronous-unwind-tables -c os.c keyboard.c system.c stdio.c commandline.c
+gcc -ffreestanding -nostdlib -nostdinc -fno-builtin -fno-stack-protector -fno-asynchronous-unwind-tables -c os.c keyboard.c system.c stdio.c commandline.c string.c
 
 #Link them together
-ld -Tlinker.ld -o os.img os_a.o os.o keyboard.o system.o stdio.o commandline.o dummy_end_section.o
+ld -Tlinker.ld -o os.img os_a.o os.o keyboard.o system.o stdio.o commandline.o string.o dummy_end_section.o
 
 #Run disassembler (optional)
 ndisasm -b16 os.img > nasm.txt
