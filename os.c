@@ -1,6 +1,7 @@
 extern void printStr(const char * msg);
 extern void setXY(unsigned short xArg, unsigned short yArg);
 extern void clrScreen();
+extern void commandline();
 const char *msg = "Welcome to RandcodeOS";
 
 int main()
@@ -8,4 +9,5 @@ int main()
 	clrScreen();
 	printf(msg);
 	setXY(0, 1);
+	commandline();
 }

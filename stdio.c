@@ -1,4 +1,6 @@
 extern void memcpy(void* dest, void* src, unsigned int size);
+extern unsigned char keyPress;
+
 unsigned int VIDEO_MEMORY = 0xB8000;
 unsigned short position = 0;
 
@@ -8,6 +10,14 @@ unsigned char SCREEN_HEIGHT = 25;
 void moveCursorTo();
 void clrScreen();
 void putch(char c);
+
+unsigned char getChar()
+{
+	while(keyPress == 0);
+	unsigned char t = keyPress;
+	keyPress = 0;
+	return t; 
+}
 
 void setXY(unsigned short x, unsigned short y)
 {

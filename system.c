@@ -15,9 +15,17 @@ void memcpy(void* dest, void* src, unsigned int size)
 	unsigned char* dest1 = (unsigned char*)dest;
 	const unsigned char* src1 = (unsigned char*)src;
 
-	unsigned int i = 0;
 	while(size--)
 	{
 		*dest1++ = *src1++;
+	}
+}
+
+void memset(void* src, unsigned char value, unsigned int size)
+{
+	unsigned char* src1 = (unsigned char*)src;
+	while(size--)
+	{
+		*src1++ = value;
 	}
 }

@@ -2,12 +2,13 @@ extern void putchar(char c);
 extern void nextLine();
 extern void deleteChar();
 
+unsigned char keyPress = 0;
 unsigned char keyscan[] =
 {
 	0,0,'1','2','3','4','5','6','7','8','9','0',
-	'-','=',0,0,
+	'-','=',0x8,0,
 	'q','w','e','r','t','y','u','i','o','p',
-	'[',']',0,0,
+	'[',']',0xD,0,
 	'a','s','d','f','g','h','j','k','l',
 	';','\'','`',0,'\\',
 	'z','x','c','v','b','n','m',
@@ -48,25 +49,17 @@ void keyboard()
 		isShift=0;
 		return;
 	}
-	else if(rv==0x1C)
-	{
-		nextLine();
-	}
-	else if(rv==0x0E)
-	{
-		deleteChar();
-	}
 	
 	if(rv<0x80 && isShift==0)
 	{
 		unsigned char c = keyscan[rv];
 		if(c != 0)
-			putchar(c);
+			keyPress = c;
 	}
 	else if(rv<0x80 && isShift==1)
 	{
 		unsigned char c = shiftkeyscan[rv];
 		if(c != 0)
-			putchar(c);
+			keyPress = c;
 	}
 }
