@@ -1,4 +1,5 @@
 extern keyboard
+extern paging_exception
 
 %macro interrupt 1
     dw   %1                 ; offset(0:15)-address of interrupt function (handler)
@@ -15,7 +16,11 @@ extern keyboard
 %endmacro
 
 idt_info:
-    %rep 32
+    %rep 14
+    interrupt interrupt_default-starting+org
+    %endrep
+    interrupt interrupt_14-starting+org
+    %rep 17
     interrupt interrupt_default-starting+org
     %endrep
 	interrupt IRQ_32_39_interrupt_default-starting+org
@@ -47,6 +52,16 @@ IRQ_40_47_interrupt_default:
     mov al, 0x20        ; EOI command
     out 0x20, al        ; send to master
     out 0xA0, al        ; send to slave
+iret
+
+interrupt_14:
+    push eax            ; save the eax
+    mov  eax, [esp+4]   ; move the error code into eax
+    push eax            ; push the error code into stack
+    call paging_exception
+    add  esp, 4         ; pop the error code
+    pop  eax;           ; restore the original eax value
+    add  esp, 4         ; pop the error code
 iret
 
 interrupt_33:
