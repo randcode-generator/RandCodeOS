@@ -1,5 +1,6 @@
 extern keyboard
 extern paging_exception
+extern timer
 
 %macro interrupt 1
     dw   %1                 ; offset(0:15)-address of interrupt function (handler)
@@ -23,7 +24,7 @@ idt_info:
     %rep 17
     interrupt interrupt_default-starting+org
     %endrep
-	interrupt IRQ_32_39_interrupt_default-starting+org
+	interrupt interrupt_32-starting+org
     interrupt interrupt_33-starting+org
     interrupt IRQ_32_39_interrupt_default-starting+org
     interrupt IRQ_32_39_interrupt_default-starting+org
@@ -62,6 +63,12 @@ interrupt_14:
     add  esp, 4         ; pop the error code
     pop  eax;           ; restore the original eax value
     add  esp, 4         ; pop the error code
+iret
+
+interrupt_32:
+    call timer
+    mov al, 0x20        ; EOI command
+    out 0x20, al        ; send to master
 iret
 
 interrupt_33:

@@ -4,6 +4,7 @@ extern void deleteChar();
 extern void nextLine();
 extern void memset(void* src, unsigned char value, unsigned int size);
 extern int strcmp(const char* str1, const char* str2);
+extern unsigned char timer_set;
 
 #define key_backspace 0x8
 #define key_enter     0xD
@@ -34,6 +35,14 @@ void commandline()
 				if(strcmp(buf, "help") == 0)
 				{
 					printf("%s\n", "No commands allowed, yet.");
+				}
+				else if(strcmp(buf, "timer on") == 0)
+				{
+					timer_set = 1;
+				}
+				else if(strcmp(buf, "timer off") == 0)
+				{
+					timer_set = 0;
 				}
 				else
 				{
