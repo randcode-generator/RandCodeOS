@@ -1,4 +1,3 @@
-extern void memcpy(void* dest, void* src, unsigned int size);
 extern unsigned char keyPress;
 
 unsigned int VIDEO_MEMORY = 0xB8000;

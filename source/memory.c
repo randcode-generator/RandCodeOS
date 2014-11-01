@@ -1,8 +1,6 @@
 unsigned int *paging_directory=(unsigned int*)0x9C000;
 unsigned int *paging_entry=(unsigned int*)0x9D000;
 
-extern void printf(const char * msg, ...);
-
 //interrupt 14
 void paging_exception(unsigned int error)
 {

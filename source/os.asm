@@ -58,7 +58,7 @@ stage2:
     jmp     0x08:stage3
 
 bits 32
-%include "idt.asm"
+%include "source/idt.asm"
 
 ; remap the IRQ by sending
 ; commands to the PIC

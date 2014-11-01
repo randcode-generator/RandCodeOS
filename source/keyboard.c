@@ -1,7 +1,3 @@
-extern void putchar(char c);
-extern void nextLine();
-extern void deleteChar();
-
 unsigned char keyPress = 0;
 unsigned char keyscan[] =
 {

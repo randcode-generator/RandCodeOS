@@ -1,9 +1,3 @@
-extern unsigned char getChar();
-extern void putchar(char c);
-extern void deleteChar();
-extern void nextLine();
-extern void memset(void* src, unsigned char value, unsigned int size);
-extern int strcmp(const char* str1, const char* str2);
 extern unsigned char timer_set;
 
 #define key_backspace 0x8
