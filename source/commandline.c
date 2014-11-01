@@ -1,5 +1,4 @@
-extern unsigned char timer_set;
-
+#include <tasks.h>
 #define key_backspace 0x8
 #define key_enter     0xD
 
@@ -30,13 +29,10 @@ void commandline()
 				{
 					printf("%s\n", "No commands allowed, yet.");
 				}
-				else if(strcmp(buf, "timer on") == 0)
+				else if(strcmp(buf, "calculate") == 0)
 				{
-					timer_set = 1;
-				}
-				else if(strcmp(buf, "timer off") == 0)
-				{
-					timer_set = 0;
+					initTasks();
+					waitForTaskDone();
 				}
 				else
 				{

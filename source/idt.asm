@@ -1,6 +1,5 @@
 extern keyboard
 extern paging_exception
-extern timer
 
 %macro interrupt 1
     dw   %1                 ; offset(0:15)-address of interrupt function (handler)
@@ -65,10 +64,16 @@ interrupt_14:
     add  esp, 4         ; pop the error code
 iret
 
+extern scheduler
+extern savedEIP
 interrupt_32:
-    call timer
     mov al, 0x20        ; EOI command
     out 0x20, al        ; send to master
+
+    push dword[esp]
+    pop  dword[savedEIP]
+    add  esp, 4
+    push scheduler
 iret
 
 interrupt_33:

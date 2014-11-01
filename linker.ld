@@ -11,7 +11,7 @@ SECTIONS
         Note: this DOES NOT include the boot sector.
         This size only contains operating system logic.
     */
-	.desiredExecutableSize = 4608;
+	.desiredExecutableSize = 7168;
 
     /*
         set current to .org

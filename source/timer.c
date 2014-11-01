@@ -1,5 +1,3 @@
-unsigned char timer_set = 0;
-
 void init_timer(unsigned short freq)
 {
 	unsigned int divisor = 1193180/freq;
@@ -10,12 +8,4 @@ void init_timer(unsigned short freq)
 
     outportb(0x40, l);
     outportb(0x40, h);
-}
-
-void timer()
-{
-	static unsigned int i = 0;
-	if(i % 100 == 0 && timer_set == 1)
-		printf("timer %u\n", i);
-	i++;
 }
