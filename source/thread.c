@@ -6,6 +6,7 @@
 
 unsigned int savedEIP = 0;
 unsigned int savedESP = 0;
+unsigned int savedCR3 = 0;
 
 void entry()
 {
@@ -33,6 +34,7 @@ void loadCurrentThread()
 {
 	savedESP = currentThread->esp;
 	savedEIP = currentThread->eip;
+	savedCR3 = currentThread->process->cr3;
 }
 
 void saveCurrentThread()
@@ -52,4 +54,13 @@ void switchTask()
 void threadJoin(thread *t)
 {
 	while(t->state != DONE);
+}
+
+thread* getFreeThread()
+{
+	static unsigned int index = 0;
+	if(index == 10)
+		return 0;
+	threads[index].id = index;
+	return &threads[index++];
 }

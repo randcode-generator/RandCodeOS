@@ -2,9 +2,12 @@
 
 void task1()
 {
+	int *g = (int*)0x900000;
+	*g = 9153;
+
 	unsigned int t1 = 0;
 	unsigned int i = 0;
-	for(; i <= 5000000; i++)
+	for(; i <= 50000000; i++)
 		t1 = 0;
 	i = 0;
 	for(; i <= 99; i++)
@@ -12,14 +15,18 @@ void task1()
 		t1 += i;
 	}
 
-	printf("summation of 99 is %u\n", t1);
+	printf("summation of 99 is %u. ", t1);
+	printf("g is %u\n", *g);
 }
 
 void task2()
 {
+	int *g = (int*)0x900000;
+	*g = 6786;
+
 	unsigned int t2 = 0;
 	unsigned int i = 0;
-	for(; i <= 5000000; i++)
+	for(; i <= 50000000; i++)
 		t2 = 0;
 	i = 0;
 	for(; i <= 100; i++)
@@ -27,16 +34,18 @@ void task2()
 		t2 += i;
 	}
 	
-	printf("summation of 100 is %u\n", t2);
+	printf("summation of 100 is %u. ", t2);
+	printf("g is %u\n", *g);
 }
 
 void initTasks()
 {
-	threadConstruct(&threads[1], task1, 0x7200);
-	threadConstruct(&threads[2], task2, 0x7300);
+	process *p1 = getFreeProcess();
+	processConstruct(p1, task1, 0x220000);
+	
+	p1 = getFreeProcess();
+	processConstruct(p1, task2, 0x240000);
 
-	threadQueueEnqueue(&tq, &threads[1]);
-	threadQueueEnqueue(&tq, &threads[2]);
 }
 
 void waitForTaskDone()

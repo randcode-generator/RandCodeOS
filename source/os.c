@@ -1,6 +1,7 @@
 #include <threadQueue.h>
 #include <thread.h>
 #include <commandline.h>
+#include <process.h>
 const char *msg = "Welcome to RandcodeOS";
 
 int main()
@@ -8,13 +9,12 @@ int main()
 	clrScreen();
 	printf(msg);
 	setXY(0, 1);
-	setup_paging();
+	initialize_paging(0x9C000);
+	enable_paging();
 
-	threadConstruct(&threads[0], commandline, 0x7100);
-
+	process *p1 = getFreeProcess();
 	threadQueueConstruct(&tq);
-	threadQueueEnqueue(&tq, &threads[0]);
-
+	processConstruct(p1, commandline, 0x200000);
 	currentThread = &threads[0];
 
 	init_timer(100);

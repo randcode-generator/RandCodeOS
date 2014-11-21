@@ -1,5 +1,6 @@
 extern savedEIP
 extern savedESP
+extern savedCR3
 
 extern switchTask
 extern getState
@@ -15,6 +16,9 @@ scheduler:
 
 READY_TO_RUNNING:
     call loadCurrentThread
+    mov eax, dword[savedCR3]
+    mov cr3, eax
+
     mov esp, dword[savedESP]
     jmp [savedEIP]
 
@@ -31,6 +35,8 @@ SAVE_STATE:
 
 RUNNING_STATE:
     call loadCurrentThread
+    mov eax, dword[savedCR3]
+    mov cr3, eax
     mov esp, dword[savedESP]
     popad
     jmp [savedEIP]

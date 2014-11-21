@@ -1,0 +1,20 @@
+#ifndef _process_
+#define _process_
+
+#include <thread.h>
+typedef struct _process process;
+
+struct _process 
+{
+	unsigned int id;
+	unsigned short threadCount;
+	unsigned int cr3;
+	thread* threads[3];
+};
+
+void processConstruct(process *p, void(*func1)(), unsigned int cr3);
+void processAddThread(process *p, thread *t);
+process *getFreeProcess();
+
+process processes[2];
+#endif
