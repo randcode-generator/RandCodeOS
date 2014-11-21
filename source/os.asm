@@ -86,6 +86,7 @@ ret
 stage3:
     mov     eax, 0x10
     mov     ds, eax     ; set ds to 0x10 (as specified in GDT)
+    mov     ss, eax     ; set ss to 0x10, otherwise, push instruction will see esp as 16 bit instead of 32 bit
 
     lidt    [idt_entry]     ; load IDT
 
