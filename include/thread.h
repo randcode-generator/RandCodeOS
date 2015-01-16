@@ -3,12 +3,18 @@
 
 typedef struct _process process;
 typedef struct _thread thread;
+enum threadStates {
+	THREAD_READY = 1,
+	THREAD_RUNNING = 2,
+	THREAD_DONE = 3
+};
+
 struct _thread
 {
 	unsigned int id;
 	unsigned int eip;
 	unsigned int esp;
-	unsigned int state;
+	enum threadStates state;
 	void (*func)();
 	process *process;
 };
@@ -17,9 +23,6 @@ struct _thread
 
 void threadConstruct(thread *t, void(*func1)(), unsigned int esp);
 void threadJoin(thread *t);
-thread* getFreeThread();
 
 thread *currentThread;
-
-thread threads[10];
 #endif

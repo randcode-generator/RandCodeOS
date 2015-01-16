@@ -1,7 +1,11 @@
-#include <tasks.h>
+#include <thread.h>
+#include <process.h>
+
 #define key_backspace 0x8
 #define key_enter     0xD
 
+extern void task1();
+extern void task2();
 void commandline()
 {
 	const char *command = "Command> ";
@@ -31,8 +35,16 @@ void commandline()
 				}
 				else if(strcmp(buf, "calculate") == 0)
 				{
-					initTasks();
-					waitForTaskDone();
+					process *p1 = getFreeProcess();
+					processConstruct(p1, task1, 0x320000);
+					thread *t1 = &p1->threads[0];
+
+					process *p2 = getFreeProcess();
+					processConstruct(p2, task2, 0x340000);
+					thread *t2 = &p2->threads[0];
+					
+					threadJoin(t1);
+					threadJoin(t2);
 				}
 				else
 				{

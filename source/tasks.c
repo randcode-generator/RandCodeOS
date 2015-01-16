@@ -4,7 +4,6 @@ void task1()
 {
 	int *g = (int*)0x900000;
 	*g = 9153;
-
 	unsigned int t1 = 0;
 	unsigned int i = 0;
 	for(; i <= 50000000; i++)
@@ -36,20 +35,4 @@ void task2()
 	
 	printf("summation of 100 is %u. ", t2);
 	printf("g is %u\n", *g);
-}
-
-void initTasks()
-{
-	process *p1 = getFreeProcess();
-	processConstruct(p1, task1, 0x220000);
-	
-	p1 = getFreeProcess();
-	processConstruct(p1, task2, 0x240000);
-
-}
-
-void waitForTaskDone()
-{
-	threadJoin(&threads[1]);
-	threadJoin(&threads[2]);
 }

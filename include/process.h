@@ -4,17 +4,24 @@
 #include <thread.h>
 typedef struct _process process;
 
+enum processStates {
+	PROCESS_READY,
+	PROCESS_RUNNING
+};
+
 struct _process 
 {
 	unsigned int id;
 	unsigned short threadCount;
 	unsigned int cr3;
-	thread* threads[3];
+	enum processStates state;
+	thread threads[3];
 };
 
 void processConstruct(process *p, void(*func1)(), unsigned int cr3);
 void processAddThread(process *p, thread *t);
+thread *processGetFreeThread(process *p);
 process *getFreeProcess();
 
-process processes[2];
+process processes[10];
 #endif

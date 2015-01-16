@@ -65,19 +65,19 @@ interrupt_14:
 iret
 
 extern scheduler
-extern savedEIP
 interrupt_32:
     mov al, 0x20        ; EOI command
     out 0x20, al        ; send to master
 
-    push dword[esp]
-    pop  dword[savedEIP]
-    add  esp, 4
-    push scheduler
+    jmp scheduler
 iret
 
 interrupt_33:
     call keyboard
     mov al, 0x20        ; EOI command
     out 0x20, al        ; send to master
+iret
+
+global interrupt_return
+interrupt_return:
 iret

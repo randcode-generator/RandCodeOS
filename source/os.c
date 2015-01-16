@@ -12,10 +12,11 @@ int main()
 	initialize_paging(0x9C000);
 	enable_paging();
 
+	memset(processes, 0, sizeof processes);
 	process *p1 = getFreeProcess();
 	threadQueueConstruct(&tq);
 	processConstruct(p1, commandline, 0x200000);
-	currentThread = &threads[0];
+	currentThread = &p1->threads[0];
 
 	init_timer(100);
 	while(1);
