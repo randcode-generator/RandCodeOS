@@ -1,6 +1,7 @@
 %define org 0x1000
 bits 16
 extern main
+extern detectMemory
 starting:
 jmp stage2
 
@@ -42,6 +43,14 @@ gdt_entry:
     dd      gdt_info                        ; base of GDT
 
 stage2:
+    ;call puts a 16bit return address on stack
+    ;but ret pops 32bits, so pushing 0 to
+    ;trick it.
+    ;The stack looks like this
+    ;-->(16bit return address)
+    ;   0x0000
+    push 0
+    call detectMemory
     cli                     ; disable interrupts
     pusha                   ; push all registers into stack
     lgdt    [gdt_entry]     ; load GDT

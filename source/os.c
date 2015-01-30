@@ -2,13 +2,21 @@
 #include <thread.h>
 #include <commandline.h>
 #include <process.h>
-const char *msg = "Welcome to RandcodeOS";
+#include <e820.h>
+const char *msg = "Welcome to RandcodeOS\n";
 
 int main()
 {
 	clrScreen();
+	int i = 0;
+	for (i = 0; i < 8; i++)
+	{
+		printf("%x %x %x %x %x\n", 
+			s[i].BaseH, s[i].BaseL, 
+			s[i].LengthH, s[i].LengthL, s[i].Type);
+	}
 	printf(msg);
-	setXY(0, 1);
+
 	initialize_paging(0x9C000);
 	enable_paging();
 
