@@ -22,9 +22,9 @@ void initialize_paging(unsigned int m)
 		paging_directory[i] = 0;
 	for(i = 0; i < 1024; i++)
 	{
-		address = physicalMemoryManagerGetPhysicalMemory(4096);
 		paging_entry[i]=0;
 		paging_entry[i]=address|3;
+		address += 4096;
 	}
 	paging_directory[0]=(unsigned int)paging_entry;
 	paging_directory[0]=paging_directory[0]|3;
@@ -60,21 +60,28 @@ void enable_paging()
 
 void allocate_memory(unsigned int fault_address, unsigned int cr3)
 {
-	unsigned int dir = (fault_address & 0xFFC00000) >> 22;
+	unsigned int dir = fault_address >> 22;
+	unsigned int table = (fault_address & 0x003FF000) >> 12;
 
 	unsigned int cr3Value = cr3;	
 	unsigned int *paging_directory = (unsigned int*)cr3Value;
-	unsigned int *paging_entry = (unsigned int*)(cr3Value + 0x1000);
+	unsigned int *paging_entry = 0;
+
+	if ((paging_directory[dir] & 1) == 1)
+	{
+		paging_entry = (unsigned int *)(paging_directory[dir] & 0xFFFFF000);
+	}
+	else {
+		paging_entry = (unsigned int*)PMM_getPageTable();
+		paging_directory[dir] = (unsigned int)&paging_entry[0];
+		paging_directory[dir] |= 0x3;
+		int i = 0;
+		for(; i < 1024; i++)
+			paging_entry[i] = 0;
+	}
 
 	unsigned int address = 0;
-	unsigned int i = dir * 1024;
-	for(; i < (dir + 1) * 1024; i++)
-	{
-		address = physicalMemoryManagerGetPhysicalMemory(4096);
-		paging_entry[i] = 0;
-		paging_entry[i] = address | 3;
-	}
-	
-	paging_directory[dir] = (unsigned int)&paging_entry[dir * 1024];
-	paging_directory[dir] |= 3;
+	address = PMM_GetPhysicalMemory(4096);
+	paging_entry[table] = 0;
+	paging_entry[table] = address | 3;
 }

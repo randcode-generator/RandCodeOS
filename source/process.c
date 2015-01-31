@@ -1,3 +1,4 @@
+
 #include <process.h>
 #include <threadQueue.h>
 
@@ -7,7 +8,7 @@ void processConstruct(process *p, void(*func1)(), unsigned int cr3)
 	p->threadCount = 0;
 	p->cr3 = cr3;
 	p->state = PROCESS_RUNNING;
-	unsigned int stack = 0x600000;
+	unsigned int stack = 0x600800;
 	allocate_memory(stack, cr3);
 
 	thread *t = processGetFreeThread(p);

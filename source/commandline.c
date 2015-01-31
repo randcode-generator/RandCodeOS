@@ -36,11 +36,11 @@ void commandline()
 				else if(strcmp(buf, "calculate") == 0)
 				{
 					process *p1 = getFreeProcess();
-					processConstruct(p1, task1, 0x320000);
+					processConstruct(p1, task1, 0x210000);
 					thread *t1 = &p1->threads[0];
 
 					process *p2 = getFreeProcess();
-					processConstruct(p2, task2, 0x340000);
+					processConstruct(p2, task2, 0x220000);
 					thread *t2 = &p2->threads[0];
 					
 					threadJoin(t1);
