@@ -79,9 +79,9 @@ void allocate_memory(unsigned int fault_address, unsigned int cr3)
 		for(; i < 1024; i++)
 			paging_entry[i] = 0;
 	}
-
 	unsigned int address = 0;
-	address = PMM_GetPhysicalMemory(4096);
+	address = PMM_GetPhysicalMemory();
 	paging_entry[table] = 0;
 	paging_entry[table] = address | 3;
+	printf("a %x ", address);
 }

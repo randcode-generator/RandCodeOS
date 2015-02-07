@@ -16,6 +16,24 @@ void processConstruct(process *p, void(*func1)(), unsigned int cr3)
 	threadQueueEnqueue(&tq, t);
 }
 
+void processDestruct(process *p) {
+	unsigned int *paging_directory = (unsigned int*)p->cr3;
+	int i = 1;
+	for(; i < 1024; i++) {
+		if((paging_directory[i] & 1) == 1) {
+			unsigned int *paging_entry = (unsigned int*)(paging_directory[i] & 0xFFFFF000);
+			int j = 0;
+			for (; j < 1024; j++) {
+				if((paging_entry[j] & 1) == 1) {
+					unsigned int phyMem = paging_entry[j] & 0xFFFFF000;
+					pfree(phyMem);
+					printf("f %x\n", paging_entry[j] & 0xFFFFF000);
+				}
+			}
+		}
+	}
+}
+
 thread* processGetFreeThread(process *p)
 {
 	if(p->threadCount == 3)

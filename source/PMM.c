@@ -68,7 +68,7 @@ void initialize_PMM() {
 	}
 }
 
-unsigned int PMM_GetPhysicalMemory(unsigned int size)
+unsigned int PMM_GetPhysicalMemory()
 {
 	unsigned int g = palloc(root);
 	return g;
