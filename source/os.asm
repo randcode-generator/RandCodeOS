@@ -1,6 +1,7 @@
 %define org 0x1000
 bits 16
 extern main
+extern enable_A20
 starting:
 jmp stage2
 
@@ -89,11 +90,10 @@ stage3:
     mov     ss, eax     ; set ss to 0x10, otherwise, push instruction will see esp as 16 bit instead of 32 bit
 
     lidt    [idt_entry]     ; load IDT
-
+    
+    call enable_A20
 	call remapIRQ
-	
 	sti
-	
     call main
     
     ; should never get here
