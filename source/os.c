@@ -19,5 +19,7 @@ int main()
 	currentThread = &p1->threads[0];
 
 	init_timer(100);
+
+	__asm("sti");
 	while(1);
 }

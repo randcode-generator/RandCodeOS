@@ -43,7 +43,6 @@ unsigned char keyboard_write_output(unsigned char a) {
 }
 
 void enable_A20() {
-	__asm("cli");
 	keyboard_wait_input();
    	keyboard_disable();
 
@@ -60,7 +59,5 @@ void enable_A20() {
 	keyboard_wait_input();
 
 	keyboard_enable();
-	keyboard_wait_input();
-
-	__asm("sti");	
+	keyboard_wait_input();	
 }

@@ -93,7 +93,7 @@ stage3:
     
     call enable_A20
 	call remapIRQ
-	sti
+    
     call main
     
     ; should never get here
