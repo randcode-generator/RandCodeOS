@@ -10,6 +10,7 @@ void entry()
 	currentThread->process->threadCount--;
 	if(currentThread->process->threadCount == 0) {
 		currentThread->process->state = PROCESS_READY;
+		processDestruct(currentThread->process);
 	}
 	while(1);
 }

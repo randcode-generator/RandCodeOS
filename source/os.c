@@ -9,6 +9,7 @@ int main()
 	clrScreen();
 	printf(msg);
 	setXY(0, 1);
+	initialize_PMM();
 	initialize_paging(0x9C000);
 	enable_paging();
 

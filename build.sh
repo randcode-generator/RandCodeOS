@@ -20,11 +20,11 @@ gcc -ffreestanding -nostdlib -nostdinc -fno-builtin -fno-stack-protector -fno-as
 gcc -ffreestanding -nostdlib -nostdinc -fno-builtin -fno-stack-protector -fno-asynchronous-unwind-tables -Iinclude -c source/threadQueue.c -o obj/threadQueue.o
 gcc -ffreestanding -nostdlib -nostdinc -fno-builtin -fno-stack-protector -fno-asynchronous-unwind-tables -Iinclude -c source/tasks.c -o obj/tasks.o
 gcc -ffreestanding -nostdlib -nostdinc -fno-builtin -fno-stack-protector -fno-asynchronous-unwind-tables -Iinclude -c source/commandline.c -o obj/commandline.o
-gcc -ffreestanding -nostdlib -nostdinc -fno-builtin -fno-stack-protector -fno-asynchronous-unwind-tables -Iinclude -c source/physicalMemoryManager.c -o obj/physicalMemoryManager.o
+gcc -ffreestanding -nostdlib -nostdinc -fno-builtin -fno-stack-protector -fno-asynchronous-unwind-tables -Iinclude -c source/PMM.c -o obj/PMM.o
 gcc -ffreestanding -nostdlib -nostdinc -fno-builtin -fno-stack-protector -fno-asynchronous-unwind-tables -c source/A20.c -o obj/A20.o
 
 #Link them together
-ld -Tlinker.ld -o obj/os.img obj/os_a.o obj/os.o obj/keyboard.o obj/system.o obj/stdio.o obj/string.o obj/memory.o obj/timer.o obj/thread.o obj/scheduler.o obj/process.o obj/threadQueue.o obj/tasks.o obj/commandline.o obj/physicalMemoryManager.o obj/scheduler_a.o obj/A20.o obj/dummy_end_section.o
+ld -Tlinker.ld -o obj/os.img obj/os_a.o obj/os.o obj/keyboard.o obj/system.o obj/stdio.o obj/string.o obj/memory.o obj/timer.o obj/thread.o obj/scheduler.o obj/process.o obj/threadQueue.o obj/tasks.o obj/commandline.o obj/PMM.o obj/scheduler_a.o obj/A20.o obj/dummy_end_section.o
 
 #Run disassembler (optional)
 ndisasm -b32 obj/os.img > nasm.txt
