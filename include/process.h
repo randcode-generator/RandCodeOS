@@ -1,6 +1,7 @@
 #ifndef _process_
 #define _process_
 
+#include <VMM.h>
 #include <thread.h>
 typedef struct _process process;
 
@@ -15,6 +16,7 @@ struct _process
 	unsigned short threadCount;
 	unsigned int cr3;
 	enum processStates state;
+	VMM vmm;
 	thread threads[3];
 };
 

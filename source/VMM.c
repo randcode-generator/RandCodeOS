@@ -2,23 +2,9 @@
 #define ALLOC 1
 #define FREE 2
 
-struct node {
-	unsigned char type;
-	unsigned int start;
-	unsigned int size;
-	struct node *prev;
-	struct node *next;
-};
+#include <VMM.h>
 
-struct VMM {
-	struct node* globaln;
-	struct node* head;
-};
-
-//struct node* globaln = (struct node*)0x700000;
-//struct node* head = 0;
-
-struct node *findNode(struct VMM *vmm) {
+struct node *findNode(VMM *vmm) {
 	int i;
 	for (i = 0; i < 10; i++)
 	{
@@ -28,7 +14,7 @@ struct node *findNode(struct VMM *vmm) {
 	return 0;
 }
 
-struct node *findFreeNode(struct VMM* vmm, int size) {
+struct node *findFreeNode(VMM* vmm, int size) {
 	struct node *n = vmm->head;
 	while(n != 0) {
 		if (n->type == FREE && n->size >= size)
@@ -40,7 +26,7 @@ struct node *findFreeNode(struct VMM* vmm, int size) {
 	return 0;
 }
 
-int valloc(struct VMM* vmm, int size) {
+void* valloc(VMM* vmm, int size) {
 	struct node *n = 0;
 	struct node *free1 = findFreeNode(vmm, size);
 
@@ -70,10 +56,10 @@ int valloc(struct VMM* vmm, int size) {
 	{
 		vmm->head = n;
 	}
-	return n->start;
+	return (void*)n->start;
 }
 
-void vfree(struct VMM* vmm, int t) {
+void vfree(VMM* vmm, int t) {
 	struct node *n = vmm->head;
 	while(n != 0) {
 		if(n->start == t) {
@@ -109,10 +95,10 @@ void vfree(struct VMM* vmm, int t) {
 	}
 }
 
-void VMM_init(struct VMM* vmm) {
+void VMM_init(VMM* vmm) {
 	if(vmm->head != 0)
 		return;
-	vmm->head = vmm->globaln;
+	vmm->head = vmm->globaln = (struct node*)0x800000;
 	int i = 0;
 	for (i = 0; i < 10; i++)
 	{
@@ -124,5 +110,4 @@ void VMM_init(struct VMM* vmm) {
 	vmm->globaln[0].size = 1000;
 	vmm->globaln[0].next = 0;
 	vmm->globaln[0].prev = 0;
-	printf("init\n");
 }

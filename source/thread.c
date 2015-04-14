@@ -1,9 +1,10 @@
 #include <threadQueue.h>
 #include <process.h>
+#include <VMM.h>
 
 void entry()
 {
-	VMM_init();
+	VMM_init(&currentThread->process->vmm);
 	currentThread->process->state = PROCESS_RUNNING;
 	currentThread->state = THREAD_RUNNING;
 	currentThread->func();

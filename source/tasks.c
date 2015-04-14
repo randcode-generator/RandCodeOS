@@ -1,7 +1,15 @@
 #include <threadQueue.h>
+#include <VMM.h>
 
 void task1()
 {
+	int* num1 = valloc(&currentThread->process->vmm, 32);
+	*num1 = 7731;
+	printf("%x %u\n", num1, *num1);
+	num1 = valloc(&currentThread->process->vmm, 64);
+	*num1 = 1923;
+	printf("%x %u\n", num1, *num1);
+
 	int *g = (int*)0x800000;
 	*g = 9153;
 	unsigned int t1 = 0;
@@ -20,6 +28,13 @@ void task1()
 
 void task2()
 {
+	int* num1 = valloc(&currentThread->process->vmm, 32);
+	*num1 = 2321;
+	printf("%x %u\n", num1, *num1);
+	num1 = valloc(&currentThread->process->vmm, 64);
+	*num1 = 9831;
+	printf("%x %u\n", num1, *num1);
+
 	int *g = (int*)0x800000;
 	*g = 6786;
 
