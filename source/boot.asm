@@ -17,7 +17,7 @@ Reset:
  
 Read:
     mov     ah, 0x02        ; 0x02 means to read from disk
-    mov     al, 16          ; read 16 sector at a time
+    mov     al, 17          ; read 16 sector at a time
     mov     ch, 0           ; sector 2 is still on track 1
     mov     cl, 2           ; sector to read (second sector)
     mov     dh, 0           ; head number

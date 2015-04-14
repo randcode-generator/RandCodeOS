@@ -2,7 +2,7 @@
 
 void task1()
 {
-	int *g = (int*)0x900000;
+	int *g = (int*)0x800000;
 	*g = 9153;
 	unsigned int t1 = 0;
 	unsigned int i = 0;
@@ -20,7 +20,7 @@ void task1()
 
 void task2()
 {
-	int *g = (int*)0x900000;
+	int *g = (int*)0x800000;
 	*g = 6786;
 
 	unsigned int t2 = 0;

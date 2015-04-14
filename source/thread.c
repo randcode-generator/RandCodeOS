@@ -3,6 +3,7 @@
 
 void entry()
 {
+	VMM_init();
 	currentThread->process->state = PROCESS_RUNNING;
 	currentThread->state = THREAD_RUNNING;
 	currentThread->func();

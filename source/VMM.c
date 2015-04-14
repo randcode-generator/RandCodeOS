@@ -10,21 +10,26 @@ struct node {
 	struct node *next;
 };
 
-struct node* globaln = (struct node*)0x700000;
-struct node *head;
+struct VMM {
+	struct node* globaln;
+	struct node* head;
+};
 
-struct node *findNode() {
+//struct node* globaln = (struct node*)0x700000;
+//struct node* head = 0;
+
+struct node *findNode(struct VMM *vmm) {
 	int i;
 	for (i = 0; i < 10; i++)
 	{
-		if(globaln[i].type == NONE)
-			return &globaln[i];
+		if(vmm->globaln[i].type == NONE)
+			return &vmm->globaln[i];
 	}
 	return 0;
 }
 
-struct node *findFreeNode(int size) {
-	struct node *n = head;
+struct node *findFreeNode(struct VMM* vmm, int size) {
+	struct node *n = vmm->head;
 	while(n != 0) {
 		if (n->type == FREE && n->size >= size)
 		{
@@ -35,16 +40,16 @@ struct node *findFreeNode(int size) {
 	return 0;
 }
 
-int valloc(int size) {
+int valloc(struct VMM* vmm, int size) {
 	struct node *n = 0;
-	struct node *free1 = findFreeNode(size);
+	struct node *free1 = findFreeNode(vmm, size);
 
 	if(free1->size == size) {
 		n = free1;
 		n->type = ALLOC;
 	}
 	else {
-		n = findNode();
+		n = findNode(vmm);
 		//link up nodes
 		if(free1->prev != 0)
 			free1->prev->next = n;
@@ -61,15 +66,15 @@ int valloc(int size) {
 		free1->size = free1->size - size;
 	}
 
-	if (head == free1)
+	if (vmm->head == free1)
 	{
-		head = n;
+		vmm->head = n;
 	}
 	return n->start;
 }
 
-void vfree(int t) {
-	struct node *n = head;
+void vfree(struct VMM* vmm, int t) {
+	struct node *n = vmm->head;
 	while(n != 0) {
 		if(n->start == t) {
 			n->type = FREE;
@@ -104,17 +109,20 @@ void vfree(int t) {
 	}
 }
 
-void VMM_init() {
-	head = globaln;
+void VMM_init(struct VMM* vmm) {
+	if(vmm->head != 0)
+		return;
+	vmm->head = vmm->globaln;
 	int i = 0;
 	for (i = 0; i < 10; i++)
 	{
-		globaln[i].type = NONE;
+		vmm->globaln[i].type = NONE;
 	}
 
-	globaln[0].type = FREE;
-	globaln[0].start = 0;
-	globaln[0].size = 1000;
-	globaln[0].next = 0;
-	globaln[0].prev = 0;
+	vmm->globaln[0].type = FREE;
+	vmm->globaln[0].start = 0x900000;
+	vmm->globaln[0].size = 1000;
+	vmm->globaln[0].next = 0;
+	vmm->globaln[0].prev = 0;
+	printf("init\n");
 }
